@@ -7,6 +7,9 @@ services:
     volumes:
       # Bind mount so we can manage OpenClaw state from host
       - ./.openclaw:/home/node/.openclaw
+    env_file:
+      - path: .env
+        required: false
     environment:
       # Gateway configuration
       OPENCLAW_GATEWAY_BIND: lan
