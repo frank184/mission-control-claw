@@ -31,18 +31,19 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
-    # volumes:
+    volumes:
       # Mission Control data (SQLite DB, token logs, etc.)
-      # - mission-control-data:/app/.data
+      - mission-control-data:/app/.data
       # OpenClaw integration (read-only access to shared state)
-      # - ./.openclaw:/home/node/.openclaw
+      - ./.openclaw:/home/node/.openclaw
     environment:
       # Mission Control data directory
       # MISSION_CONTROL_DATA_DIR: /app/.data
 
       # OpenClaw gateway connection
-      OPENCLAW_GATEWAY_HOST: openclaw-gateway
-      
+      OPENCLAW_GATEWAY_HOST: ${OPENCLAW_GATEWAY_HOST:-host.docker.internal}
+      OPENCLAW_GATEWAY_PORT: ${OPENCLAW_GATEWAY_PORT:-18789}
+
       # Browser WebSocket access (localhost for host browser, container name for server)
       NEXT_PUBLIC_GATEWAY_HOST: localhost
       # NEXT_PUBLIC_GATEWAY_PORT: 18789
@@ -61,6 +62,8 @@ services:
 
       # Logging
       LOG_LEVEL: debug
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/healthz"]
       interval: 30s
